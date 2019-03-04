@@ -12,6 +12,7 @@ import HistoryObserver from './observers/history'
 import MouseObserver from './observers/mouse'
 
 import SonyA7R3 from './tools/SonyA7R3'
+import XT30 from './tools/X-T30'
 
 export default class SessionRecorder implements Recorder {
   public observers: Observers = {
@@ -91,7 +92,7 @@ export default class SessionRecorder implements Recorder {
 
     const { clientWidth: w, clientHeight: h } = document.documentElement
     const { x, y } = (this.observers.event as any).getScrollPosition()
-
+    console.log(XT30.captureEvent())
     return {
       t: this.lastSnapshot.time,
       type: 'snapshot',
@@ -100,7 +101,7 @@ export default class SessionRecorder implements Recorder {
         w,
         h
       },
-      snapshot: SonyA7R3.takeSnapshotForPage()
+      snapshot: XT30.captureEvent().data.snapshot
     }
   }
 
@@ -113,9 +114,9 @@ export default class SessionRecorder implements Recorder {
     this.recording = true
 
     this.baseTime = _now()
+    XT30.startRecording()
     // note the getSnapshotRecord method depend on baseTime
     this.trail[0] = this.getSnapshotRecord()
-
     Object.keys(this.observers).forEach(observerName => {
       if (this.options[observerName]) {
         ;(this.observers[observerName] as Observer).install()
